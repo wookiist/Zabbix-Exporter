@@ -30,7 +30,7 @@ class ZabbixCollector(object):
         #jobs = self._request_data()
 
         # create a prometheus metric
-        metric = Metric('jobs_running', 'Current Jobs Running', 'gauge')
+        metric = Metric('zabbix_warning', 'Current Zabbix Warning Count', 'gauge')
         # Get a list of all issues (AKA tripped triggers)
 
         triggers = self._zapi.trigger.get(only_true=1,
@@ -55,22 +55,19 @@ class ZabbixCollector(object):
 
         unack_trigger_ids = [t['triggerid'] for t in unack_triggers]
 
-        '''
         for t in triggers:
             t['unacknowledged'] = True if t['triggerid'] in unack_trigger_ids \
                 else False
 
         # Print a list containing only "tripped" triggers
+        # Sum triggers which value is 1
+        warn_cnt = 0
         for t in triggers:
             if int(t['value']) == 1:
-                print("{0} - {1} {2}".format(t['hosts'][0]['host'],
-                                             t['description'],
-                                             '(Unack)' if t['unacknowledged'] else '')
-                      )
-        '''
-        # print(len(triggers))
+                warn_cnt += 1
+
         # append data to the metric
-        metric.add_sample('jobs_running', value=int(len(triggers)), labels={})
+        metric.add_sample('zabbix_warning', value=int(warn_cnt), labels={})
         yield metric
 
     def _request_data(self):
