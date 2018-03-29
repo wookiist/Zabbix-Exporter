@@ -1,0 +1,16 @@
+## Ignore File ##
+
+*.log
+*.bak
+*.dmg
+*.tar
+*.gz
+*.rar
+*.zip
+
+# OS generated files #
+
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
