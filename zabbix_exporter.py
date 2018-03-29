@@ -28,7 +28,7 @@ class ZabbixCollector(object):
         metric = Metric('zabbix_warning', 'Current Zabbix Warning Count', 'gauge')
         # Get a list of all issues (AKA tripped triggers)
 
-        triggers = self.zapi.trigger.get(only_true=1,
+        triggers = zapi.trigger.get(only_true=1,
                                     skipDependent=1,
                                     monitored=1,
                                     active=1,
@@ -38,7 +38,7 @@ class ZabbixCollector(object):
                                     )
 
         # Do another query to find out which issues are Unacknowledged
-        unack_triggers = self.zapi.trigger.get(only_true=1,
+        unack_triggers = zapi.trigger.get(only_true=1,
                                           skipDependent=1,
                                           monitored=1,
                                           active=1,
