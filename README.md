@@ -1,2 +1,2 @@
-# Zabbix-Exporter
+# Zabbix Exporter
 Zabbix Exporter for Prometheus
