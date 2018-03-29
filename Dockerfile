@@ -8,8 +8,7 @@ COPY requirements.txt /app/zabbix_exporter
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY zabbix_exporter.py /app/zabbix_exporter
-COPY args_parser.py /app/zabbix_exporter
 
 EXPOSE 9288
 
-ENTRYPOINT [ "python", "-u", "./zabbix_exporter.py" "--username", "]
+ENTRYPOINT ["python", "-u", "./zabbix_exporter.py"]
