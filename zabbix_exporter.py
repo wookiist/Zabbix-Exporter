@@ -2,10 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 import time
-
 import os
-from prometheus_client import start_http_server, Summary, Metric
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
+from prometheus_client import start_http_server, Metric
+from prometheus_client.core import REGISTRY
 from pyzabbix import ZabbixAPI
 
 DEBUG = int(os.environ.get('DEBUG', '0'))
@@ -68,12 +67,9 @@ class ZabbixCollector(object):
 
 def main():
     try:
-
         # start the webserver on the required port
         start_http_server(9288)
         REGISTRY.register(ZabbixCollector())
-        while True:
-            time.sleep(1)
     except KeyboardInterrupt:
         print(" Keyboard Interrupted")
         exit(0)
