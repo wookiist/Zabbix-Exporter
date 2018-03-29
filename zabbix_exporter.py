@@ -4,7 +4,7 @@
 import re
 import time
 
-import args_parser
+from args_parser import args_parser
 import os
 from prometheus_client import start_http_server, Summary, Metric
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
