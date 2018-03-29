@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import re
 import time
 
 from args_parser import args_parser
@@ -23,8 +22,9 @@ class ZabbixCollector(object):
         self._zapi.login(username, password)
 
     def collect(self):
-        # login to the zabbix api
+        # define environment variables
         start = time.time()
+
 
         # Request data from Zabbix
         #jobs = self._request_data()
