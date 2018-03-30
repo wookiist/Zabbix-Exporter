@@ -2,12 +2,16 @@
 # -*- coding: UTF-8 -*-
 
 import time
+import logging
 import os
 from prometheus_client import start_http_server, Metric
 from prometheus_client.core import REGISTRY
 from pyzabbix import ZabbixAPI
+import yaml
+
 
 DEBUG = int(os.environ.get('DEBUG', '0'))
+logger = logging.getLogger(__name__)
 
 
 class ZabbixCollector(object):
