@@ -2,38 +2,36 @@
 # -*- coding: UTF-8 -*-
 
 import time
-
-from args_parser import args_parser
+import logging
 import os
-from prometheus_client import start_http_server, Summary, Metric
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
-from prometheus_client.parser import text_string_to_metric_families
+from prometheus_client import start_http_server, Metric
+from prometheus_client.core import REGISTRY
 from pyzabbix import ZabbixAPI
+import yaml
+
 
 DEBUG = int(os.environ.get('DEBUG', '0'))
+logger = logging.getLogger(__name__)
 
 
 class ZabbixCollector(object):
-    def __init__(self, url, username, password):
-        self._url = url.rstrip("/")
-        #self._username = username
-        #self._password = password
-        self._zapi = ZabbixAPI(self._url + '/zabbix')
-        self._zapi.login(username, password)
+    def __init__(self):
+        pass
 
     def collect(self):
         # define environment variables
-        start = time.time()
+        zabbix_exp_url = os.environ.get('ZABBIX_EXP_URL', 'http://localhost/')
+        zabbix_exp_username = os.environ.get('ZABBIX_EXP_USERNAME', 'Admin')
+        zabbix_exp_password = os.environ.get('ZABBIX_EXP_PASSWORD', 'zabbix')
 
-
-        # Request data from Zabbix
-        #jobs = self._request_data()
+        zapi = ZabbixAPI(zabbix_exp_url)
+        zapi.login(zabbix_exp_username, zabbix_exp_password)
 
         # create a prometheus metric
         metric = Metric('zabbix_warning', 'Current Zabbix Warning Count', 'gauge')
         # Get a list of all issues (AKA tripped triggers)
 
-        triggers = self._zapi.trigger.get(only_true=1,
+        triggers = zapi.trigger.get(only_true=1,
                                     skipDependent=1,
                                     monitored=1,
                                     active=1,
@@ -43,7 +41,7 @@ class ZabbixCollector(object):
                                     )
 
         # Do another query to find out which issues are Unacknowledged
-        unack_triggers = self._zapi.trigger.get(only_true=1,
+        unack_triggers = zapi.trigger.get(only_true=1,
                                           skipDependent=1,
                                           monitored=1,
                                           active=1,
@@ -70,26 +68,12 @@ class ZabbixCollector(object):
         metric.add_sample('zabbix_warning', value=int(warn_cnt), labels={})
         yield metric
 
-    def _request_data(self):
-        # Request exactly the information we need from Jenkins
-        pass
-
-    def _setup_empty_prometheus_metrics(self):
-        # The metrics we want to export
-        #self._prometheus_metrics = {}
-        pass
-
 
 def main():
     try:
-        args = args_parser()
-        port = int(args.port)
-
         # start the webserver on the required port
         start_http_server(9288)
-        REGISTRY.register(ZabbixCollector(args.url, args.username, args.password))
-        while True:
-            time.sleep(1)
+        REGISTRY.register(ZabbixCollector())
     except KeyboardInterrupt:
         print(" Keyboard Interrupted")
         exit(0)
